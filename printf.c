@@ -1,12 +1,11 @@
 #include "main.h"
-#include <stdarg.h>
 #include <unistd.h>
-#include <stdio.h>  /* forgot it :p */
+#include <stdarg.h>
+#include <stdio.h>
 
 /**
  * _printf - Custom printf function
  * @format: Format string
- * @...: Variable number of arguments
  *
  * Return: Number of characters printed (excluding null byte)
  */
@@ -18,7 +17,7 @@ int _printf(const char *format, ...)
 
     va_start(args, format);
 
-    while (*format != '\0')
+    while (*format)
     {
         if (*format != '%')
         {
@@ -66,10 +65,10 @@ int _print_str(char *str)
 {
     int count = 0;
 
-    if (str == NULL)
+    if (!str)
         str = "(null)";
 
-    while (*str != '\0')
+    while (*str)
     {
         write(1, str, 1);
         str++;
