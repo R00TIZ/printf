@@ -1,7 +1,6 @@
 #include "main.h"
 #include <unistd.h>
 #include <stdarg.h>
-#include <stdio.h>
 
 /**
  * _printf - Custom printf function
@@ -13,7 +12,6 @@ int _printf(const char *format, ...)
 {
     va_list args;
     int count = 0;
-    char c;
 
     va_start(args, format);
 
@@ -30,9 +28,7 @@ int _printf(const char *format, ...)
             switch (*format)
             {
                 case 'c':
-                    c = va_arg(args, int);
-                    write(1, &c, 1);
-                    count++;
+                    count += _print_char(va_arg(args, int));
                     break;
                 case 's':
                     count += _print_str(va_arg(args, char *));
@@ -53,6 +49,18 @@ int _printf(const char *format, ...)
     va_end(args);
 
     return count;
+}
+
+/**
+ * _print_char - Print a character
+ * @c: Character to print
+ *
+ * Return: Number of characters printed
+ */
+int _print_char(int c)
+{
+    write(1, &c, 1);
+    return 1;
 }
 
 /**
