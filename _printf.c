@@ -2,6 +2,11 @@
 #include <unistd.h>
 #include <stdarg.h>
 
+/**
+ * _printf - Printf function
+ * @format: format.
+ * Return: Number of characters printed.
+ */
 int _printf(const char *format, ...)
 {
     va_list args;
@@ -60,6 +65,13 @@ int _printf(const char *format, ...)
     return count;
 }
 
+/**
+ * _print_char - Prints a character to the buffer
+ * @c: Character to print
+ * @buffer: Buffer to store characters
+ * @count: Current count of characters in buffer
+ * Return: Number of characters printed
+ */
 int _print_char(int c, char buffer[], int count)
 {
     buffer[count++] = c;
@@ -71,6 +83,13 @@ int _print_char(int c, char buffer[], int count)
     return 1;
 }
 
+/**
+ * _print_str - Prints a string to the buffer
+ * @str: String to print
+ * @buffer: Buffer to store characters
+ * @count: Current count of characters in buffer
+ * Return: Number of characters printed
+ */
 int _print_str(char *str, char buffer[], int count)
 {
     if (!str)
