@@ -14,70 +14,94 @@ int _printf(const char *format, ...)
     va_start(args, format);
 
     int printed_chars = 0;
+    int buff_ind = 0;
+    char buffer[BUFF_SIZE];
+
     while (*format != '\0')
     {
         if (*format != '%')
         {
-            write(1, format, 1);
-            printed_chars++;
+            buffer[buff_ind++] = *format;
+            if (buff_ind == BUFF_SIZE - 1)
+            {
+                print_buffer(buffer, &buff_ind);
+                printed_chars += buff_ind;
+            }
+            else
+            {
+                printed_chars++;
+            }
         }
         else
         {
-            format++; /* Move past '%' */
+            format++;
             switch (*format)
             {
                 case 'c':
-                    printed_chars += print_char(va_arg(args, int));
+                    buffer[buff_ind++] = va_arg(args, int);
                     break;
                 case 's':
-                    printed_chars += print_string(va_arg(args, char *));
+                    printed_chars += print_string(args, buffer, &buff_ind);
                     break;
                 case '%':
-                    write(1, "%", 1);
-                    printed_chars++;
+                    buffer[buff_ind++] = '%';
                     break;
                 default:
-                    write(1, "%", 1);
-                    write(1, format, 1);
-                    printed_chars += 2;
-                    break;
+                    buffer[buff_ind++] = '%';
+                    buffer[buff_ind++] = *format;
             }
         }
         format++;
     }
 
+    print_buffer(buffer, &buff_ind);
     va_end(args);
 
     return (printed_chars);
 }
 
 /**
- * print_char - Prints a character
- * @c: Character to print
- * Return: Number of characters printed
- */
-int print_char(char c)
-{
-    write(1, &c, 1);
-    return 1;
-}
-
-/**
  * print_string - Prints a string
- * @s: String to print
+ * @args: va_list for variable arguments
+ * @buffer: Character buffer
+ * @buff_ind: Index at which to add the next char
  * Return: Number of characters printed
  */
-int print_string(char *s)
+int print_string(va_list args, char buffer[], int *buff_ind)
 {
+    char *s = va_arg(args, char *);
     if (s == NULL)
         s = "(null)";
 
     int len = 0;
     while (*s)
     {
-        write(1, s, 1);
+        buffer[*buff_ind] = *s;
+        (*buff_ind)++;
+        if (*buff_ind == BUFF_SIZE - 1)
+        {
+            print_buffer(buffer, buff_ind);
+            len += *buff_ind;
+        }
+        else
+        {
+            len++;
+        }
         s++;
-        len++;
     }
     return len;
+}
+
+/**
+ * print_buffer - Prints the contents of the buffer if it exists
+ * @buffer: Character buffer
+ * @buff_ind: Index at which to add the next char, represents the length.
+ */
+void print_buffer(char buffer[], int *buff_ind)
+{
+    if (*buff_ind > 0)
+    {
+        write(1, buffer, *buff_ind);
+        *buff_ind = 0;
+    }
 }
