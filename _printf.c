@@ -1,110 +1,83 @@
 #include "main.h"
-#include <unistd.h>
-#include <stdarg.h>
 
 /**
  * _printf - Printf function
  * @format: format.
- * Return: Number of characters printed.
+ * Return: Printed chars.
  */
 int _printf(const char *format, ...)
 {
-    va_list args;
-    int count = 0;
-    char buffer[1024];  // Adjust the buffer size as needed
+    if (format == NULL)
+        return (-1);
 
+    va_list args;
     va_start(args, format);
 
-    while (*format)
+    int printed_chars = 0;
+    while (*format != '\0')
     {
         if (*format != '%')
         {
-            buffer[count++] = *format;
-            if (count == sizeof(buffer) - 1)  // Check if buffer is full
-            {
-                write(1, buffer, count);
-                count = 0;
-            }
+            write(1, format, 1);
+            printed_chars++;
         }
         else
         {
-            format++;
+            format++; /* Move past '%' */
             switch (*format)
             {
                 case 'c':
-                    count += _print_char(va_arg(args, int), buffer, count);
+                    printed_chars += print_char(va_arg(args, int));
                     break;
                 case 's':
-                    count += _print_str(va_arg(args, char *), buffer, count);
+                    printed_chars += print_string(va_arg(args, char *));
                     break;
                 case '%':
-                    buffer[count++] = '%';
-                    if (count == sizeof(buffer) - 1)
-                    {
-                        write(1, buffer, count);
-                        count = 0;
-                    }
+                    write(1, "%", 1);
+                    printed_chars++;
                     break;
                 default:
-                    buffer[count++] = '%';
-                    buffer[count++] = *format;
-                    if (count == sizeof(buffer) - 1)
-                    {
-                        write(1, buffer, count);
-                        count = 0;
-                    }
+                    write(1, "%", 1);
+                    write(1, format, 1);
+                    printed_chars += 2;
+                    break;
             }
         }
         format++;
     }
 
-    write(1, buffer, count);  // Write any remaining characters in the buffer
-
     va_end(args);
 
-    return count;
+    return (printed_chars);
 }
 
 /**
- * _print_char - Prints a character to the buffer
+ * print_char - Prints a character
  * @c: Character to print
- * @buffer: Buffer to store characters
- * @count: Current count of characters in buffer
  * Return: Number of characters printed
  */
-int _print_char(int c, char buffer[], int count)
+int print_char(char c)
 {
-    buffer[count++] = c;
-    if (count == sizeof(buffer) - 1)
-    {
-        write(1, buffer, count);
-        count = 0;
-    }
+    write(1, &c, 1);
     return 1;
 }
 
 /**
- * _print_str - Prints a string to the buffer
- * @str: String to print
- * @buffer: Buffer to store characters
- * @count: Current count of characters in buffer
+ * print_string - Prints a string
+ * @s: String to print
  * Return: Number of characters printed
  */
-int _print_str(char *str, char buffer[], int count)
+int print_string(char *s)
 {
-    if (!str)
-        str = "(null)";
+    if (s == NULL)
+        s = "(null)";
 
-    while (*str)
+    int len = 0;
+    while (*s)
     {
-        buffer[count++] = *str;
-        if (count == sizeof(buffer) - 1)
-        {
-            write(1, buffer, count);
-            count = 0;
-        }
-        str++;
+        write(1, s, 1);
+        s++;
+        len++;
     }
-
-    return count;
+    return len;
 }
