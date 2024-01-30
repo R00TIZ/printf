@@ -1,5 +1,7 @@
 #include "main.h"
+#include <stdarg.h>
 #include <unistd.h>
+#include <stdio.h>  /* forgot it :p */
 
 /**
  * _printf - Custom printf function
@@ -12,22 +14,21 @@ int _printf(const char *format, ...)
 {
     va_list args;
     int count = 0;
-    const char *ptr;
     char c;
 
     va_start(args, format);
 
-    for (ptr = format; *ptr != '\0'; ptr++)
+    while (*format != '\0')
     {
-        if (*ptr != '%')
+        if (*format != '%')
         {
-            write(1, ptr, 1);
+            write(1, format, 1);
             count++;
         }
         else
         {
-            ptr++;
-            switch (*ptr)
+            format++;
+            switch (*format)
             {
                 case 'c':
                     c = va_arg(args, int);
@@ -43,10 +44,11 @@ int _printf(const char *format, ...)
                     break;
                 default:
                     write(1, "%", 1);
-                    write(1, ptr, 1);
+                    write(1, format, 1);
                     count += 2;
             }
         }
+        format++;
     }
 
     va_end(args);
